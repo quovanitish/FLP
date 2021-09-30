@@ -115,7 +115,48 @@ class TicTacToe {
     else
         return true;
   }
+
+   // function to perform the move
+   playMove(player) {
+    this.printBoard();
+    console.log("Enter your move position(1,2,3...) on board - Player".white.bgBlack.bold, player);
+    console.log("======================================================");
+    readLine.question("\n", (position)=> {
+        console.log("");
+        let validPostitionNum = parseInt(position);
+        let rowNum = parseInt((validPostitionNum - 1) / 3);
+        let colNum = parseInt((validPostitionNum - 1) % 3);
+
+        // In case of invalid position entered on board
+        if(this.checkValidMove(rowNum, colNum) == false) {
+          console.log("Enter correct position: ".white.bold);
+          console.log("=======================")
+          this.playMove(player);
+      }
+
+      else {
+        this.board[rowNum][colNum] = player;
+        this.totalMoves++;
+        this.checkWinner();
+        if(this.playerWon) {
+            console.log(this.playerWon == this.player1 ? "Player 1" : "Player 2","won the game !!!".green.bold);
+            console.log();
+            this.printBoard();
+            process.exit();
+        }
+        else {
+            player == this.player1 ? this.playMove(this.player2) : this.playMove(this.player1);
+        }
+    }
+    })
+  };
+
+  // function to start the game
+  startGame() {
+    this.playMove(this.player1);
+  };
 }
 
 let board = [['X', ' ', '0'], [' ', 'X', ' '], ['0', ' ', ' ']]
 let game = new TicTacToe(board);
+game.startGame();

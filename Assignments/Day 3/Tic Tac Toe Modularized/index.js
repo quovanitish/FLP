@@ -1,7 +1,12 @@
+require("colors");
+const readLine = require("readline").createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
 /* To create an instance of a tic tac toe game */
-// TODO: Implement playmove() functions to play the game
 function TicTacToe(
-  board = [
+  _board = [
     [" ", " ", " "],
     [" ", " ", " "],
     [" ", " ", " "],
@@ -9,9 +14,57 @@ function TicTacToe(
 ) {
   this.player1 = "X";
   this.player2 = "0";
-  this.totalMoves = 0;
-  this.playerWon = undefined;
-  this.board = board;
+  this.board = _board;
+  this.totalMoves = this.countMoves();
+  this.playerWon;
+
+  // function to start the game
+  this.startGame = function () {
+    playMove.call(this, this.player1);
+  };
+  
+  // function to check a valid move
+  this.checkValidMove = function(rowNum, colNum) {
+    if(this.board[rowNum][colNum] != ' ' || this.board[rowNum][colNum] == undefined) 
+        return false;
+    else
+        return true;
+  }
+
+  // function to play moves on board
+  let playMove = (player)=> {
+    this.printBoard();
+    console.log("Enter your move position(1,2,3...) on board - Player".white.bgBlack.bold, player);
+    console.log("======================================================");
+    readLine.question("\n", (position)=> {
+        console.log("");
+        let validPostitionNum = parseInt(position);
+        let rowNum = parseInt((validPostitionNum - 1) / 3);
+        let colNum = parseInt((validPostitionNum - 1) % 3);
+
+        // In case of invalid position entered on board
+        if(this.checkValidMove(rowNum, colNum) == false) {
+          console.log("Enter correct position: ".white.bold);
+          console.log("=======================")
+          playMove(player);
+      }
+
+      else {
+        this.board[rowNum][colNum] = player;
+        this.totalMoves++;
+        this.checkWinner();
+        if(this.playerWon) {
+            console.log(this.playerWon == this.player1 ? "Player 1" : "Player 2","won the game !!!".green.bold);
+            console.log();
+            this.printBoard();
+            process.exit();
+        }
+        else {
+            player == this.player1 ? playMove(this.player2) : playMove(this.player1);
+        }
+    }
+    })
+  };
 }
 
 // Assign printBoard() function to every instance of TicTacToe object
@@ -108,12 +161,23 @@ TicTacToe.prototype.checkWinner = function () {
   return;
 };
 
+// Assign a countMoves() function to every instace of TicTacToe object
+// to count moves made on a passed board
+TicTacToe.prototype.countMoves = function() {
+  let count = 0;
+  for(let i = 0; i < this.board.length; i++) {
+    for(let j = 0; j < this.board[i].length; j++) {
+      if(this.board[i][j] != ' ') count++;
+    }
+  }
+  return count;
+}
+
+
 let board = [
-	["X", " ", " "],
+  ["X", "0", "0"],
   [" ", "X", " "],
-  [" ", " ", "X"],
+  [" ", " ", " "],
 ];
 let game = new TicTacToe(board);
-game.checkWinner();
-game.printBoard();
-console.log(game.playerWon);
+game.startGame();

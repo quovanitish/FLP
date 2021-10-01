@@ -108,55 +108,69 @@ class TicTacToe {
     return;
   };
 
-  // function to check a performed move is valid or not
-  checkValidMove(rowNum, colNum) {
+  // function to start the game
+  startGame() {
+
+    // Count and set totalMoves for the passed board
+    const countMoves=()=>{
+      let count = 0;
+      for(let i = 0; i < this.board.length; i++) {
+        for(let j = 0; j < this.board[i].length; j++) {
+          if(this.board[i][j] != ' ')
+            count++;
+        }
+      }
+      return count;
+    }
+
+    // function to check a performed move is valid or not
+    const checkValidMove=(rowNum, colNum)=>{
     if(this.board[rowNum][colNum] != ' ' || this.board[rowNum][colNum] == undefined) 
         return false;
     else
         return true;
-  }
+    };
 
-   // function to perform the move
-   playMove(player) {
-    this.printBoard();
-    console.log("Enter your move position(1,2,3...) on board - Player".white.bgBlack.bold, player);
-    console.log("======================================================");
-    readLine.question("\n", (position)=> {
-        console.log("");
-        let validPostitionNum = parseInt(position);
-        let rowNum = parseInt((validPostitionNum - 1) / 3);
-        let colNum = parseInt((validPostitionNum - 1) % 3);
-
-        // In case of invalid position entered on board
-        if(this.checkValidMove(rowNum, colNum) == false) {
-          console.log("Enter correct position: ".white.bold);
-          console.log("=======================")
-          this.playMove(player);
-      }
-
-      else {
-        this.board[rowNum][colNum] = player;
-        this.totalMoves++;
-        this.checkWinner();
-        if(this.playerWon) {
-            console.log(this.playerWon == this.player1 ? "Player 1" : "Player 2","won the game !!!".green.bold);
-            console.log();
-            this.printBoard();
-            process.exit();
+    // function to perform the move
+    const playMove=(player)=>{
+      this.printBoard();
+      console.log("Enter your move position(1,2,3...) on board - Player".white.bgBlack.bold, player);
+      console.log("======================================================");
+      readLine.question("\n", (position)=> {
+          console.log("");
+          let validPostitionNum = parseInt(position);
+          let rowNum = parseInt((validPostitionNum - 1) / 3);
+          let colNum = parseInt((validPostitionNum - 1) % 3);
+  
+          // In case of invalid position entered on board
+          if(checkValidMove(rowNum, colNum) == false) {
+            console.log("Enter correct position: ".white.bold);
+            console.log("=======================")
+            playMove(player);
         }
+  
         else {
-            player == this.player1 ? this.playMove(this.player2) : this.playMove(this.player1);
-        }
-    }
-    })
-  };
-
-  // function to start the game
-  startGame() {
-    this.playMove(this.player1);
+          this.board[rowNum][colNum] = player;
+          this.totalMoves++;
+          this.checkWinner();
+          if(this.playerWon) {
+              console.log(this.playerWon == this.player1 ? "Player 1" : "Player 2","won the game !!!".green.bold);
+              console.log();
+              this.printBoard();
+              process.exit();
+          }
+          else {
+              player == this.player1 ? playMove(this.player2) : playMove(this.player1);
+          }
+      }
+      })
+    };
+  
+    this.totalMoves = countMoves();
+    playMove(this.player1);
   };
 }
 
-let board = [['X', ' ', '0'], [' ', 'X', ' '], ['0', ' ', ' ']]
+let board = [['X', ' ', '0'], [' ', ' ', ' '], [' ', ' ', ' ']]
 let game = new TicTacToe(board);
 game.startGame();
